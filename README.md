@@ -1,4 +1,4 @@
-steam
+Steamy
 =====
 
-Used to build out eloquent models and relationships from an existing database for Laravel 4
+Used to build out Eloquent ORM models and relationships from an existing database.
