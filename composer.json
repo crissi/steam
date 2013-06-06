@@ -1,0 +1,25 @@
+{
+    "name": "pitch/steamy",
+    "description": "Scan a database that already exists and builds out Model files for Eloquent w/ relationships, etc.",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Brandon McQueen",
+            "email": "brandon@pitchcreative.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x",
+        "illuminate/view": "4.0.x",
+    },
+    "autoload": {
+        "classmap": [
+            "src/controllers",
+        ],
+        "psr-0": {
+            "Pitch\\Steamy": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
