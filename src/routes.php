@@ -1,4 +1,11 @@
 <?php
 
-Route::get('/steamy', 'SteamController@Dashboard');
-Route::get('/steamy/test', 'SteamController@Test');
+Route::get('/steamy', function()
+{
+	return App::make('steam')->dashboard();
+});
+
+Route::post('/steamy/process', function()
+{
+	return App::make('steam')->process();
+});

@@ -14,9 +14,6 @@
         "illuminate/view": "4.0.x",
     },
     "autoload": {
-        "classmap": [
-            "src/controllers",
-        ],
         "psr-0": {
             "Pitch\\Steamy": "src/"
         }
