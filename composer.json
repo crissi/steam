@@ -1,6 +1,6 @@
 {
     "name": "pitch/steamy",
-    "description": "Scan an existing database generate Model files for Eloquent w/ relationships",
+    "description": "Scan an existing database and generate Model files for Eloquent w/ relationships<br />Current output is setup for laravel 4 and goes into app/models",
     "license": "BSD-2-Clause",
     "authors": [
         {
