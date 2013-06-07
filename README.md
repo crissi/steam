@@ -33,3 +33,4 @@ php artisan asset:publish
 
 Once you have installed Steamy visit yourdomain.com/steamy to proceed.
 
+> PLEASE BE AWARE, THIS SCRIPT WILL OVERWRITE YOUR MODELS IF YOU CHECK THEM TO BE WRITTEN
