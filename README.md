@@ -29,7 +29,8 @@ Publish assets, run the below command from command line:
 php artisan asset:publish
 ```
 
-###Using
+Using
+=====
 
 > PLEASE BE AWARE, THIS SCRIPT WILL OVERWRITE YOUR MODELS IF YOU SELECT
 > THEM TO BE WRITTEN FROM THE STEAMY DASHBOARD
