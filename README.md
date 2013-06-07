@@ -35,4 +35,4 @@ Using
 > PLEASE BE AWARE, THIS SCRIPT WILL OVERWRITE YOUR MODELS IF YOU SELECT
 > THEM TO BE WRITTEN FROM THE STEAMY DASHBOARD
 
-Once you have installed Steamy visit yourdomain.com/steamy to proceed.
+Once you have installed Steamy visit ```yourdomain.com/steamy``` to proceed.
