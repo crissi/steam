@@ -13,7 +13,7 @@ Add ```"pitch/steamy": "dev-master"``` to your root composer.json file. You may 
 },
 ```
 
-Add ```'Pitch\Steamy\SteamyServiceProvider'``` to you app/config/app.php file under 
+Add ```'Pitch\Steamy\SteamyServiceProvider'``` to the bottom of the providers array in app/config/app.php
 
 ```php
 	'providers' => array(
