@@ -1,6 +1,6 @@
 {
     "name": "pitch/steamy",
-    "description": "Scan a database that already exists and builds out Model files for Eloquent w/ relationships, etc.",
+    "description": "Scan an existing database generate Model files for Eloquent w/ relationships",
     "license": "BSD-2-Clause",
     "authors": [
         {
