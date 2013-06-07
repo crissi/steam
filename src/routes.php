@@ -7,5 +7,11 @@ Route::get('/steamy', function()
 
 Route::post('/steamy/process', function()
 {
-	return App::make('steam')->process();
+	$process = App::make('steam')->process();
+
+	if($process){
+		//return App::make('steam')->dashboard();
+		return Redirect::to('steamy');
+	}
+
 });

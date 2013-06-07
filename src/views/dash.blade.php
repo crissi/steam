@@ -66,15 +66,16 @@
 			<table style="width:100%;">
 				<?php foreach($data['form'] as $key => $val){ ?>
 					<tr style="background:<?=$val['color']?>">
-						<td align="center" style="width:50px;"><input type="checkbox" value="<?=$key?>"></td>
+						<td align="center" style="width:50px;"><input type="checkbox" name="tbls[]" value="<?=$key?>"></td>
 						<td style="width:150px;"><?=ucwords(str_replace('_',' ',$key))?></td>
 						<td><label class="checkbox"><?=$val['text']?></label></td>
 					</tr>
 				<?php } ?>
 			</table>
 			<hr />
-			<button class="btn btn-info submit" type="button">Process Selected Tables</button>&nbsp;
-			<button class="btn btn-info" type="button">Check All</button>
+			<button class="btn btn-info submit" type="button">Process Selected Tables</button>&nbsp;&nbsp;
+			<button class="btn btn-info checkAll" type="button">Toggle All</button>&nbsp;&nbsp;
+			<button class="btn btn-info clearAll" type="button">Clear All</button>
 		<?php echo Form::close(); ?>
 
     </div> <!-- /container -->
@@ -84,6 +85,20 @@
     <script>
     	$('.submit').click(function(){
     		$('form').submit();
+    	});
+    	$('tr').click(function(){
+    		var chkBox = $(this).find('input');
+    		chkBox.prop('checked', !chkBox.prop('checked'));
+    	});
+    	$('.checkAll').click(function(){
+    		$('input').each(function(){
+	    		$(this).prop('checked', !$(this).prop('checked'));
+    		});
+    	});
+    	$('.clearAll').click(function(){
+    		$('input').each(function(){
+	    		$(this).prop('checked', false);
+    		});
     	});
     </script>
 </body>  

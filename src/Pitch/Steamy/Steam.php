@@ -31,7 +31,7 @@ class Steam {
 
 	}
 
-	public function Dashboard(){
+	public function Dashboard($msg = ''){
 		
 		$data['db'] = $this->database;
 
@@ -65,6 +65,8 @@ class Steam {
 
 		$data['count'] = $i;
 		$data['form'] = $form;
+		if($msg)
+			$data['msg'] = $msg;
 
 		return $this->view->make('steamy::dash', compact('data'));
 
@@ -72,15 +74,27 @@ class Steam {
 
 	public function Process(){
 
-		$data= '';
-		$this->CreateModels($data);
+		return $this->CreateModels();
 
 	}
 
-	private function CreateModels($data){
+	private function CreateModels(){
 
-		//echo 'processing';
-		//
+		$folder = '/pitch/steamy/src/templates';
+
+		if(is_dir(base_path().'/vendor'.$folder))
+			$path = base_path().'/vendor'.$folder;
+		else
+			$path = base_path().'/workbench'.$folder;
+
+		$template = file_get_contents($path.'/model.php');
+		$many_to_many = file_get_contents($path.'/many-to-many.php');
+		$one_to_many = file_get_contents($path.'/one-to-many.php');
+		$one_to_one = file_get_contents($path.'/one-to-one.php');
+		$modelCount = 0;
+		$belCount = 0;
+		$relCount = 0;
+		$hasCount = 0;
 
 		if($_POST){
 			// Generate our arrays to use later
@@ -88,92 +102,103 @@ class Steam {
 			$hasmany = array();
 			$process = array();
 			
-			if($_POST['tbl']){
-				foreach($_POST['tbl'] as $v){
+			$tbls = $_POST['tbls'];
+
+			if(count($tbls) > 0){
+				foreach($tbls as $v){
 					array_push($process, $v);
 				}
 			}
-			
-			while($row = mysql_fetch_array($tables)){
-				if(in_array($row[0], $process)){
-					$belongs[$row[0]] = array();
-					$hasmany[$row[0]] = array();
+
+			$tables = $this->db->select('SHOW TABLES');
+
+			foreach($tables as $row){
+
+				if(in_array($row->Tables_in_laravel, $process)){
+					$belongs[$row->Tables_in_laravel] = array();
+					$hasmany[$row->Tables_in_laravel] = array();
 					
-					$rows = mysql_query("SHOW COLUMNS FROM $row[0]");
-					while($col = mysql_fetch_array($rows, MYSQL_ASSOC)){
+					//$rows = mysql_query("SHOW COLUMNS FROM $row[0]");
+					//mysql_fetch_array($rows, MYSQL_ASSOC)
+					$cols = $this->db->select("SHOW COLUMNS FROM $row->Tables_in_laravel");
+					foreach($cols as $col){
 						
-						array_push($hasmany[$row[0]], str_replace('_id','',$col[Field]));
+						array_push($hasmany[$row->Tables_in_laravel], str_replace('_id','',$col->Field));
 						
-						if(strstr($col[Field], '_id')){
-							array_push($belongs[$row[0]], str_replace('_id','',$col[Field]));
+						if(strstr($col->Field, '_id')){
+							array_push($belongs[$row->Tables_in_laravel], str_replace('_id','',$col->Field));
 						}		
 					}
 				}
 			}
 			
 			// Rest our pointer for the mysql_query back to 0 because we just looped through it.
-			mysql_data_seek($tables, 0);
+			// mysql_data_seek($tables, 0);
 			
-			while($row = mysql_fetch_array($tables)){
-				if(in_array($row[0], $process)){
+			foreach($tables as $row){
+				if(in_array($row->Tables_in_laravel, $process)){
 			
-					$filename = ucfirst(str_replace('_','',$row[0]));
+					$filename = ucfirst(str_replace('_','',$row->Tables_in_laravel));
 					if(substr($filename, -3) == 'ies'){
 						$filename = str_replace('ies','y',$filename);
 					}elseif(substr($filename, -1) == 's'){
 						$filename = substr($filename, 0, -1);
 					}
 					
-					$newFile = fopen($modelPath.$filename.'.php', 'w');
+					// Open our new file.
+					$newFile = fopen(app_path().'/models/'.$filename.'.php', 'w');
 					
+					// Add the class name to the model
 					$contents = str_replace('{class_name}', $filename, $template);
 					
-					// Check if we need to specify a table name and do the damn thang.
-					if(strstr($row[0], '_')){
-						$contents = str_replace('// {table_name}', PHP_EOL.'    static $table_name = "'.$row[0].'";'.PHP_EOL, $contents);
-					}else{
-						$contents = str_replace('// {table_name}', '', $contents);
-					}
-					
-					
-					// Check if this table has any others that reference it's id
-					$hasm = 'static $has_many = array('.PHP_EOL.'{rep}    );'.PHP_EOL;
+					// Add the table name to the model
+					$contents = str_replace('{table_name}', $row->Tables_in_laravel, $contents);
+
 					foreach($hasmany as $key => $val){ // Loop through all tables.
 						
-						if($row[0] != $key){ // We don't need to loop through the table we're working with currnetly.
-				
-							if(in_array($row[0], $val) OR in_array(substr($row[0], 0, -1), $val) OR in_array(substr($row[0], 0, -1).'ies', $val) OR in_array(substr($row[0], 0, -3).'y', $val)){
-								$hasm = str_replace('{rep}', "        array('$key'), ".PHP_EOL."{rep}", $hasm);
-								$hasCount++;
-								$relCount++;
+						$hasm = $one_to_many.PHP_EOL;
+						
+						if($row->Tables_in_laravel != $key){ // We don't need to loop through the table we're working with currnetly.
+
+							if(in_array($row->Tables_in_laravel, $val) 
+								OR in_array(substr($row->Tables_in_laravel, 0, -1), $val) 
+								OR in_array(substr($row->Tables_in_laravel, 0, -1).'ies', $val) 
+								OR in_array(substr($row->Tables_in_laravel, 0, -3).'y', $val)){
+									$hasm = str_replace('{functionName}', $key, $hasm);
+									$hasm = str_replace('{tableName}', ucwords($key), $hasm);
+									$hasCount++;
+									$relCount++;
+									$contents = str_replace('// {has_many}', $hasm, $contents);
 							}
 							
 						}
 						
 					}
-				
-					$hasm = str_replace(array('{rep}',', {rep}'), "", $hasm);
-					$contents = str_replace('// {has_many}', '// {has_many}'.PHP_EOL.'    '.$hasm, $contents);
-						
-					
+					$contents = str_replace('// {has_many}', '', $contents);
+
 					// Check if this table references any other tables by id (*_id)
-					$bel = 'static $belongs_to = array('.PHP_EOL.'{rep}    );'.PHP_EOL;
-					foreach($belongs[$row[0]] as $val){
-						$bel = str_replace('{rep}', "        array('$val'), ".PHP_EOL."{rep}", $bel);
+					foreach($belongs[$row->Tables_in_laravel] as $val){
+						$bel = $one_to_one.PHP_EOL;
+						$bel = str_replace('{functionName}', $val, $bel);
+						$bel = str_replace('{tableName}', ucwords($val), $bel);
 						$belCount++;
 						$relCount++;
+						$contents = str_replace('// {belongs_to}', $bel, $contents);
 					}
-					$bel = str_replace(array('{rep}',', {rep}'), "", $bel);
-					$contents = str_replace('// {belongs_to}', '// {belongs_to}'.PHP_EOL.'    '.$bel, $contents);
+					
+					$contents = str_replace('// {belongs_to}', '', $contents);
 					
 					fwrite($newFile, $contents);
 					fclose($newFile);
+
 					++$modelCount;
 				}
 			}
 
-		// We're just going to print out the table list and give the user the chance to select the ones to be generated.
-		}		
+			return true;
+		}else{
+			return false;
+		}
 
 	}
 
