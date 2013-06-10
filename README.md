@@ -1,5 +1,7 @@
 ##Steamy
 
+[![Build Status](https://travis-ci.org/BrandonMcQueen/steam.png?branch=master)](https://travis-ci.org/BrandonMcQueen/steam)
+
 Used to build out Eloquent ORM models and relationships from an existing database.
 
 ###Installing
