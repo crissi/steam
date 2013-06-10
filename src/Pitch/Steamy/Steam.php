@@ -76,6 +76,7 @@ class Steam {
 	private function CreateModels(){
 
 		$folder = '/pitch/steamy/src/templates';
+		$tableName = 'Tables_in_'.$this->database;
 
 		if(is_dir(base_path().'/vendor'.$folder))
 			$path = base_path().'/vendor'.$folder;
@@ -109,19 +110,19 @@ class Steam {
 
 			foreach($tables as $row){
 
-				if(in_array($row->Tables_in_laravel, $process)){
-					$belongs[$row->Tables_in_laravel] = array();
-					$hasmany[$row->Tables_in_laravel] = array();
+				if(in_array($row->$tableName, $process)){
+					$belongs[$row->$tableName] = array();
+					$hasmany[$row->$tableName] = array();
 					
 					//$rows = mysql_query("SHOW COLUMNS FROM $row[0]");
 					//mysql_fetch_array($rows, MYSQL_ASSOC)
-					$cols = $this->db->select("SHOW COLUMNS FROM $row->Tables_in_laravel");
+					$cols = $this->db->select("SHOW COLUMNS FROM $row->$tableName");
 					foreach($cols as $col){
 						
-						array_push($hasmany[$row->Tables_in_laravel], str_replace('_id','',$col->Field));
+						array_push($hasmany[$row->$tableName], str_replace('_id','',$col->Field));
 						
 						if(strstr($col->Field, '_id')){
-							array_push($belongs[$row->Tables_in_laravel], str_replace('_id','',$col->Field));
+							array_push($belongs[$row->$tableName], str_replace('_id','',$col->Field));
 						}		
 					}
 				}
@@ -131,9 +132,9 @@ class Steam {
 			// mysql_data_seek($tables, 0);
 			
 			foreach($tables as $row){
-				if(in_array($row->Tables_in_laravel, $process)){
+				if(in_array($row->$tableName, $process)){
 			
-					$filename = ucfirst(str_replace('_','',$row->Tables_in_laravel));
+					$filename = ucfirst(str_replace('_','',$row->$tableName));
 					if(substr($filename, -3) == 'ies'){
 						$filename = str_replace('ies','y',$filename);
 					}elseif(substr($filename, -1) == 's'){
@@ -147,18 +148,18 @@ class Steam {
 					$contents = str_replace('{class_name}', $filename, $template);
 					
 					// Add the table name to the model
-					$contents = str_replace('{table_name}', $row->Tables_in_laravel, $contents);
+					$contents = str_replace('{table_name}', $row->$tableName, $contents);
 
 					foreach($hasmany as $key => $val){ // Loop through all tables.
 						
 						$hasm = $one_to_many.PHP_EOL;
 						
-						if($row->Tables_in_laravel != $key){ // We don't need to loop through the table we're working with currnetly.
+						if($row->$tableName != $key){ // We don't need to loop through the table we're working with currnetly.
 
-							if(in_array($row->Tables_in_laravel, $val) 
-								OR in_array(substr($row->Tables_in_laravel, 0, -1), $val) 
-								OR in_array(substr($row->Tables_in_laravel, 0, -1).'ies', $val) 
-								OR in_array(substr($row->Tables_in_laravel, 0, -3).'y', $val)){
+							if(in_array($row->$tableName, $val) 
+								OR in_array(substr($row->$tableName, 0, -1), $val) 
+								OR in_array(substr($row->$tableName, 0, -1).'ies', $val) 
+								OR in_array(substr($row->$tableName, 0, -3).'y', $val)){
 									$hasm = str_replace('{functionName}', $key, $hasm);
 									$hasm = str_replace('{tableName}', ucwords($key), $hasm);
 									$hasCount++;
@@ -172,7 +173,7 @@ class Steam {
 					$contents = str_replace('// {has_many}', '', $contents);
 
 					// Check if this table references any other tables by id (*_id)
-					foreach($belongs[$row->Tables_in_laravel] as $val){
+					foreach($belongs[$row->$tableName] as $val){
 						$bel = $one_to_one.PHP_EOL;
 						$bel = str_replace('{functionName}', $val, $bel);
 						$bel = str_replace('{tableName}', ucwords($val), $bel);
