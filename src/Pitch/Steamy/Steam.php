@@ -7,8 +7,6 @@ use Illuminate\Database\DatabaseManager;
 class Steam {
 
 	private $database;
-	private $username;
-	private $password;
 
     /**
      * Illuminate view environment.
@@ -21,11 +19,7 @@ class Steam {
 
 	public function __construct(Environment $view, Repository $config, DatabaseManager $db){
 
-
-		$this->database = $config->get('steamy::steam.database');
-		$this->username = $config->get('steamy::steam.username');
-		$this->password = $config->get('steamy::steam.password');
-
+		$this->database = $config->get('database.connections.mysql.database');
 		$this->view = $view;
 		$this->db = $db;
 
@@ -33,7 +27,7 @@ class Steam {
 
 	public function Dashboard($msg = ''){
 		
-		$data['db'] = $this->database;
+		// $data['db'] = $this->database;
 
 		$tables = $this->db->select('SHOW TABLES');
 		$form = array();
@@ -44,7 +38,8 @@ class Steam {
 			$check = 'File will be created.';
 			$clr = '#beff9a';
 
-			$tble = $row->Tables_in_laravel;
+			$tableName = 'Tables_in_'.$this->database;
+			$tble = $row->$tableName;
 			
 			$filename = ucfirst(str_replace('_','',$tble));
 			if(substr($filename, -3) == 'ies'){
