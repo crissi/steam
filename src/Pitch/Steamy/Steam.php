@@ -116,7 +116,8 @@ class Steam {
 					
 					//$rows = mysql_query("SHOW COLUMNS FROM $row[0]");
 					//mysql_fetch_array($rows, MYSQL_ASSOC)
-					$cols = $this->db->select("SHOW COLUMNS FROM $row->$tableName");
+					$tName = $row->$tableName;
+					$cols = $this->db->select("SHOW COLUMNS FROM $tName");
 					foreach($cols as $col){
 						
 						array_push($hasmany[$row->$tableName], str_replace('_id','',$col->Field));
